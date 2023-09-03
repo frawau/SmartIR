@@ -4,11 +4,11 @@
   "documentation": "https://github.com/smartHomeHub/SmartIR",
   "dependencies": [],
   "codeowners": ["@smartHomeHub"],
-  "requirements": ["aiofiles>=0.6.0"],
+  "requirements": ["aiofiles>=0.6.0", "pyhvac"],
   "homeassistant": "2022.4.0",
-  "version": "1.17.7",
+  "version": "1.17.8",
   "updater": {
-    "version": "1.17.7",
+    "version": "1.17.8",
     "releaseNotes": "-- Fixes #1025",
     "files": [
       "__init__.py",
