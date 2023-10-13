@@ -37,10 +37,12 @@ _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = "SmartIR Climate"
 DEFAULT_DELAY = 0.5
+DEFAULT_MODEL = "generic"
 
 CONF_UNIQUE_ID = "unique_id"
 CONF_DEVICE_CODE = "device_code"
 CONF_CONTROLLER_DATA = "controller_data"
+CONF_MODEL = "model"
 CONF_DELAY = "delay"
 CONF_TEMPERATURE_SENSOR = "temperature_sensor"
 CONF_HUMIDITY_SENSOR = "humidity_sensor"
@@ -55,6 +57,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Required(CONF_DEVICE_CODE): cv.string,
         vol.Required(CONF_CONTROLLER_DATA): vol.Any(cv.positive_int, cv.string),
+        vol.Optional(CONF_MODEL, default=CONF_MODEL): cv.string,
         vol.Optional(CONF_DELAY, default=DEFAULT_DELAY): cv.positive_float,
         vol.Optional(CONF_TEMPERATURE_SENSOR): cv.entity_id,
         vol.Optional(CONF_HUMIDITY_SENSOR): cv.entity_id,
@@ -101,6 +104,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             )
             return
 
+    device_data = {}
     with device_json_path.open(encoding="UTF-8") as j:
         try:
             _LOGGER.debug(f"loading json file {device_json_path}")
@@ -109,13 +113,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         except Exception:
             _LOGGER.error("The device Json file is invalid")
             return
+
     if "irType" in device_data and device_data["irType"] == "generated":
         try:
             hvac = importlib.import_module(
                 f"pyhvac.plugins.{device_data['manufacturer'].lower()}"
             )
             pobj = hvac.PluginObject()
-            device = pobj.get_device(device_data["model"])
+            device = pobj.get_device(config.get(CONF_MODEL))
             async_add_entities(
                 [VerySmartIRClimate(hass, config, device, pobj.all_models(device))]
             )
@@ -492,7 +497,7 @@ class SmartIRClimate(ClimateEntity, RestoreEntity):
 class VerySmartIRClimate(SmartIRClimate):
     def __init__(self, hass, config, hvac, lom=[]):
         _LOGGER.debug(
-            f"SmartIRClimate init started for device {config.get(CONF_NAME)} supported models {device_data['supportedModels']}"
+            f"SmartIRClimate init started for device {config.get(CONF_NAME)} supported models: {lom}"
         )
         self.hass = hass
         self._unique_id = config.get(CONF_UNIQUE_ID)
