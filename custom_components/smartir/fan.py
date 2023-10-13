@@ -16,6 +16,7 @@ from homeassistant.components.fan import (
     ATTR_OSCILLATING,
 )
 from homeassistant.const import CONF_NAME, STATE_OFF, STATE_ON, STATE_UNKNOWN
+
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change
 import homeassistant.helpers.config_validation as cv
@@ -238,14 +239,14 @@ class SmartIRFan(FanEntity, RestoreEntity):
             self._last_on_speed = self._speed
 
         await self.send_command()
-        await self.async_update_ha_state()
+        self.async_write_ha_state()
 
     async def async_oscillate(self, oscillating: bool) -> None:
         """Set oscillation of the fan."""
         self._oscillating = oscillating
 
         await self.send_command()
-        await self.async_update_ha_state()
+        self.async_write_ha_state()
 
     async def async_set_direction(self, direction: str):
         """Set the direction of the fan"""
@@ -254,7 +255,7 @@ class SmartIRFan(FanEntity, RestoreEntity):
         if not self._speed.lower() == SPEED_OFF:
             await self.send_command()
 
-        await self.async_update_ha_state()
+        self.async_write_ha_state()
 
     async def async_turn_on(self, percentage: int = None, **kwargs):
         """Turn on the fan."""
@@ -299,10 +300,10 @@ class SmartIRFan(FanEntity, RestoreEntity):
         if new_state.state == STATE_ON and self._speed == SPEED_OFF:
             self._on_by_remote = True
             self._speed = None
-            await self.async_update_ha_state()
+            self.async_write_ha_state()
 
         if new_state.state == STATE_OFF:
             self._on_by_remote = False
             if self._speed != SPEED_OFF:
                 self._speed = SPEED_OFF
-            await self.async_update_ha_state()
+            self.async_write_ha_state()

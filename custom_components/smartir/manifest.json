@@ -4,12 +4,13 @@
   "documentation": "https://github.com/smartHomeHub/SmartIR",
   "dependencies": [],
   "codeowners": ["@smartHomeHub"],
+<<<<<<< HEAD
   "requirements": ["aiofiles>=0.6.0", "pyhvac"],
-  "homeassistant": "2022.4.0",
+  "homeassistant": "2023.6.0",
   "version": "1.17.8",
   "updater": {
     "version": "1.17.8",
-    "releaseNotes": "-- Fixes #1025",
+    "releaseNotes": "-- Fix self.async_update_ha_state() #1071",
     "files": [
       "__init__.py",
       "climate.py",
