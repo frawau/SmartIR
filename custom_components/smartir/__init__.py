@@ -5,7 +5,6 @@ import binascii
 from distutils.version import StrictVersion
 import json
 import logging
-import os.path
 import requests
 import struct
 import voluptuous as vol
@@ -14,12 +13,13 @@ from aiohttp import ClientSession
 from homeassistant.const import ATTR_FRIENDLY_NAME, __version__ as current_ha_version
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.typing import ConfigType
+from pathlib import Path
 
 _LOGGER = logging.getLogger(__name__)
 
 
 DOMAIN = "smartir"
-VERSION = "1.17.8"
+VERSION = "1.17.10"
 MANIFEST_URL = (
     "https://raw.githubusercontent.com/"
     "smartHomeHub/SmartIR/{}/"
@@ -30,7 +30,7 @@ REMOTE_BASE_URL = (
     "smartHomeHub/SmartIR/{}/"
     "custom_components/smartir/"
 )
-COMPONENT_ABS_DIR = os.path.dirname(os.path.abspath(__file__))
+COMPONENT_ABS_DIR = Path(__file__).parent.resolve()
 
 CONF_CHECK_UPDATES = "check_updates"
 CONF_UPDATE_BRANCH = "update_branch"
@@ -122,8 +122,8 @@ async def _update(hass, branch, do_update=False, notify_if_latest=True):
                     for file in files:
                         try:
                             source = REMOTE_BASE_URL.format(branch) + file
-                            dest = os.path.join(COMPONENT_ABS_DIR, file)
-                            os.makedirs(os.path.dirname(dest), exist_ok=True)
+                            dest = COMPONENT_ABS_DIR / file
+                            dest.parent.mkdir(parents=True, exist_ok=True)
                             await Helper.downloader(source, dest)
                         except Exception:
                             has_errors = True
@@ -155,7 +155,7 @@ class Helper:
         async with aiohttp.ClientSession() as session:
             async with session.get(source) as response:
                 if response.status == 200:
-                    async with aiofiles.open(dest, mode="wb") as f:
+                    async with aiofiles.open(str(dest), mode="wb") as f:
                         await f.write(await response.read())
                 else:
                     raise Exception("File not found")
