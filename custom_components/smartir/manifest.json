@@ -6,10 +6,10 @@
   "codeowners": ["@smartHomeHub"],
   "requirements": ["aiofiles>=0.6.0", "pyhvac"],
   "homeassistant": "2023.12.0",
-  "version": "1.17.9",
+  "version": "1.17.10",
   "updater": {
-    "version": "1.17.9",
-    "releaseNotes": "-- Fix Fan.async_turn_on() #1170",
+    "version": "1.17.10",
+    "releaseNotes": "-- Added A/C from IRremoteESP8266",
     "files": [
       "__init__.py",
       "climate.py",
