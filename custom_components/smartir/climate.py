@@ -49,7 +49,7 @@ CONF_HUMIDITY_SENSOR = "humidity_sensor"
 CONF_POWER_SENSOR = "power_sensor"
 CONF_POWER_SENSOR_RESTORE_STATE = "power_sensor_restore_state"
 
-SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE
+SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE | ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -114,7 +114,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         async_add_entities([SmartIRClimate(hass, config, device_data)])
     else:
         try:
-            hvac = importlib.import_module(f"pyhvac.plugins.{device_code.lower()}")
+            hvac = importlib.import_module(f"pyhvac.plugins.{device_code.lower().replace(' & ','_').replace(' ','_')}")
             pobj = hvac.PluginObject()
             device = pobj.get_device(config.get(CONF_MODEL, "Not set"))
             async_add_entities(
