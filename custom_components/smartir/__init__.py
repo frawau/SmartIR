@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 DOMAIN = "smartir"
-VERSION = "1.17.10"
+VERSION = "1.18.0"
 MANIFEST_URL = (
     "https://raw.githubusercontent.com/"
     "smartHomeHub/SmartIR/{}/"
